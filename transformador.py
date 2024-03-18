@@ -44,14 +44,15 @@ if arquivos:
         options=['JPG', 'PNG', 'WEBP']
     )
     if len(arquivos) == 1: 
+        arquivo = arquivos[0]
         if escolha == 'JPG':
-            img_transformada = transformaJpg(arquivos)
+            img_transformada = transformaJpg(arquivo)
             formato = 'jpeg'
         elif escolha == 'PNG':
-            img_transformada = transformaPng(arquivos)
+            img_transformada = transformaPng(arquivo)
             formato = 'png'
         elif escolha == 'WEBP':
-            img_transformada = transformaWebp(arquivos)
+            img_transformada = transformaWebp(arquivo)
             formato = 'webp'
         st.download_button(
             label=f'Download imagem',
@@ -75,16 +76,20 @@ if arquivos:
             arquivos_transformados.append((img_transformada, arquivo.name))
 
         if st.button('Download em uma pasta zipada'):
-            with zipfile.ZipFile(f'{texto}.zip', 'w') as zip_file:
+            zip_bytes = io.BytesIO()
+            with zipfile.ZipFile(zip_bytes, 'w') as zip_file:
                 for img_transformada, filename in arquivos_transformados:
                     buffer = io.BytesIO()
                     img_transformada.save(buffer, format=formato)
                     zip_file.writestr(filename, buffer.getvalue())
 
-                st.write('Download concluído!')
-                with open(f'{texto}.zip', 'rb') as file:
-                    zip_bytes = file.read()
-                st.download_button(label='Clique aqui para baixar', data=zip_bytes, file_name=f'{texto}.zip')
+            zip_bytes.seek(0)
+            st.download_button(
+                label='Clique aqui para baixar',
+                data=zip_bytes.getvalue(),
+                file_name=f'{texto}.zip',
+                mime='application/zip'
+            )
 
 container = st.container()
 a, b, c = container.columns(3)
