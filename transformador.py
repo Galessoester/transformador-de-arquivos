@@ -3,6 +3,8 @@ from PIL import Image
 import io
 import zipfile
 
+texto = 'ta_aqui_suas_imagens_transofrmadas_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso'
+
 # Função para transformar em JPG
 def transformaJpg(arquivo):
     img = Image.open(arquivo)
@@ -47,10 +49,8 @@ if arquivos:
         'Qual tipo você vai querer? 👀',
         options=['JPG', 'PNG', 'WEBP']
     )
-
-    arquivos_transformados = []
-
-    for arquivo in arquivos:
+    if len(arquivos) == 1: 
+        arquivo = arquivos[0]
         if escolha == 'JPG':
             img_transformada = transformaJpg(arquivo)
             formato = 'jpeg'
@@ -60,22 +60,38 @@ if arquivos:
         elif escolha == 'WEBP':
             img_transformada = transformaWebp(arquivo)
             formato = 'webp'
+        st.download_button(
+            label=f'Download imagem',
+            data=download_arquivo(img_transformada, formato),
+            file_name=f'{texto}.{formato}',
+        )
 
-        arquivos_transformados.append((img_transformada, arquivo.name))
+    else:
+        arquivos_transformados = []
+        for arquivo in arquivos:
+            if escolha == 'JPG':
+                img_transformada = transformaJpg(arquivo)
+                formato = 'jpeg'
+            elif escolha == 'PNG':
+                img_transformada = transformaPng(arquivo)
+                formato = 'png'
+            elif escolha == 'WEBP':
+                img_transformada = transformaWebp(arquivo)
+                formato = 'webp'
 
+            arquivos_transformados.append((img_transformada, arquivo.name))
 
-if st.button('Download em uma pasta zipada'):
-    texto = 'ta_aqui_suas_imagens_transofrmadas_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso'
-    with zipfile.ZipFile(f'{texto}.zip', 'w') as zip_file:
-        for img_transformada, filename in arquivos_transformados:
-            buffer = io.BytesIO()
-            img_transformada.save(buffer, format=formato)
-            zip_file.writestr(filename, buffer.getvalue())
+        if st.button('Download em uma pasta zipada'):
+            with zipfile.ZipFile(f'{texto}.zip', 'w') as zip_file:
+                for img_transformada, filename in arquivos_transformados:
+                    buffer = io.BytesIO()
+                    img_transformada.save(buffer, format=formato)
+                    zip_file.writestr(filename, buffer.getvalue())
 
-        st.write('Download concluído!')
-        with open(f'{texto}.zip', 'rb') as file:
-            zip_bytes = file.read()
-        st.download_button(label='Clique aqui para baixar', data=zip_bytes, file_name=f'{texto}.zip')
+                st.write('Download concluído!')
+                with open(f'{texto}.zip', 'rb') as file:
+                    zip_bytes = file.read()
+                st.download_button(label='Clique aqui para baixar', data=zip_bytes, file_name=f'{texto}.zip')
 
 container = st.container()
 a, b, c = container.columns(3)
