@@ -37,7 +37,8 @@ To te dando uma ajudinha pra facilitar a vida
 
 arquivo = st.file_uploader(
     'Coloque aqui a sua imagem 🖼️',
-    type=['jpg', 'png', 'webp', 'jpeg']
+    type=['jpg', 'png', 'webp', 'jpeg'],
+    accept_multiple_files=True
 )
 
 if arquivo:
