@@ -3,26 +3,20 @@ from PIL import Image
 import io
 import zipfile
 
-texto = 'ta_aqui_suas_imagens_transofrmadas_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso'
-
-# Função para transformar em JPG
 def transformaJpg(arquivo):
     img = Image.open(arquivo)
-    img = img.convert('RGB')  # Convertendo para RGB para suportar formato JPG
+    img = img.convert('RGB')  
     return img
 
-# Função para transformar em PNG
 def transformaPng(arquivo):
     img = Image.open(arquivo)
     return img
 
-# Função para transformar em WEBP
 def transformaWebp(arquivo):
     img = Image.open(arquivo)
-    img = img.convert('RGB')  # Convertendo para RGB para suportar formato WEBP
+    img = img.convert('RGB')  
     return img
 
-# Função para download do arquivo transformado
 def download_arquivo(img, formato):
     output = io.BytesIO()
     img.save(output, format=formato)
@@ -34,8 +28,6 @@ st.markdown('''
 Como você é incrivel e faz as coisinhas pensando em mim com **TODO AMOR E CARINHO DO MUNDO**
             
 To te dando uma ajudinha pra facilitar a vida 
-
-
 ''')
 
 arquivos = st.file_uploader(
@@ -44,21 +36,22 @@ arquivos = st.file_uploader(
     accept_multiple_files=True
 )
 
+texto = 'ta_aqui_suas_imagens_transofrmadas_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso'
+
 if arquivos:
     escolha = st.selectbox(
         'Qual tipo você vai querer? 👀',
         options=['JPG', 'PNG', 'WEBP']
     )
     if len(arquivos) == 1: 
-        arquivo = arquivos[0]
         if escolha == 'JPG':
-            img_transformada = transformaJpg(arquivo)
+            img_transformada = transformaJpg(arquivos)
             formato = 'jpeg'
         elif escolha == 'PNG':
-            img_transformada = transformaPng(arquivo)
+            img_transformada = transformaPng(arquivos)
             formato = 'png'
         elif escolha == 'WEBP':
-            img_transformada = transformaWebp(arquivo)
+            img_transformada = transformaWebp(arquivos)
             formato = 'webp'
         st.download_button(
             label=f'Download imagem',
