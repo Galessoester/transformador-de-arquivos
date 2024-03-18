@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import io
+import zipfile
 
 # Função para transformar em JPG
 def transformaJpg(arquivo):
@@ -35,34 +36,46 @@ To te dando uma ajudinha pra facilitar a vida
 
 ''')
 
-arquivo = st.file_uploader(
+arquivos = st.file_uploader(
     'Coloque aqui a sua imagem 🖼️',
     type=['jpg', 'png', 'webp', 'jpeg'],
     accept_multiple_files=True
 )
 
-if arquivo:
+if arquivos:
     escolha = st.selectbox(
         'Qual tipo você vai querer? 👀',
         options=['JPG', 'PNG', 'WEBP']
     )
-    if escolha == 'JPG':
-        img_transformada = transformaJpg(arquivo)
-        formato = 'jpeg'
-    elif escolha == 'PNG':
-        img_transformada = transformaPng(arquivo)
-        formato = 'png'
-    elif escolha == 'WEBP':
-        img_transformada = transformaWebp(arquivo)
-        formato = 'webp'
 
-        st.image(img_transformada, caption=f'Imagem transformada para {escolha}')
+    arquivos_transformados = []
 
-    st.download_button(
-        label=f'Download {escolha}',
-        data=download_arquivo(img_transformada, formato),
-        file_name=f'ta_aqui_sua_imagem_transofrmada_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso.{formato}',
-    )
+    for arquivo in arquivos:
+        if escolha == 'JPG':
+            img_transformada = transformaJpg(arquivo)
+            formato = 'jpeg'
+        elif escolha == 'PNG':
+            img_transformada = transformaPng(arquivo)
+            formato = 'png'
+        elif escolha == 'WEBP':
+            img_transformada = transformaWebp(arquivo)
+            formato = 'webp'
+
+        arquivos_transformados.append((img_transformada, arquivo.name))
+
+
+if st.button('Download em uma pasta zipada'):
+    texto = 'ta_aqui_suas_imagens_transofrmadas_amorzao_lindo_maravilhoso_perfeito_sensacional_divino_incrivel_meu_deus_que_que_eh_isso'
+    with zipfile.ZipFile(f'{texto}.zip', 'w') as zip_file:
+        for img_transformada, filename in arquivos_transformados:
+            buffer = io.BytesIO()
+            img_transformada.save(buffer, format=formato)
+            zip_file.writestr(filename, buffer.getvalue())
+
+        st.write('Download concluído!')
+        with open(f'{texto}.zip', 'rb') as file:
+            zip_bytes = file.read()
+        st.download_button(label='Clique aqui para baixar', data=zip_bytes, file_name=f'{texto}.zip')
 
 container = st.container()
 a, b, c = container.columns(3)
