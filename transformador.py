@@ -17,6 +17,19 @@ def download_arquivo(img, formato):
     img.save(output, format=formato)
     return output.getvalue()
 
+def renomeiaArquivo(arquivo):
+    str = arquivo.name
+    jpg = '.jpg'
+    png = '.png'
+    webp = '.webp'
+    if str.find(jpg):
+        nome_arquivo = str.replace(jpg, '')
+    elif str.find(png):
+        nome_arquivo = str.replace(png, '')
+    elif str.find(webp):
+        nome_arquivo = str.replace(webp, '')
+    return nome_arquivo
+
 st.markdown('''
 # Oi amorzaum 🥰
             
@@ -49,10 +62,11 @@ if arquivos:
         elif escolha == 'WEBP':
             img_transformada = transformaRgb(arquivo)
             formato = 'webp'
+        nome = renomeiaArquivo(arquivo)
         st.download_button(
             label=f'Download imagem',
             data=download_arquivo(img_transformada, formato),
-            file_name=f'{texto}.{formato}',
+            file_name=f'{nome}.{formato}',
         )
 
     else:
@@ -67,16 +81,17 @@ if arquivos:
             elif escolha == 'WEBP':
                 img_transformada = transformaRgb(arquivo)
                 formato = 'webp'
-
-            arquivos_transformados.append((img_transformada, arquivo.name))
+            nome = renomeiaArquivo(arquivo)
+            arquivos_transformados.append((img_transformada, nome, formato))
 
         if st.button('Download em uma pasta zipada'):
             zip_bytes = io.BytesIO()
             with zipfile.ZipFile(zip_bytes, 'w') as zip_file:
-                for img_transformada, filename in arquivos_transformados:
+                for img_transformada, filename, formato in arquivos_transformados:
                     buffer = io.BytesIO()
+                    nome = f'{filename}.{formato}'
                     img_transformada.save(buffer, format=formato)
-                    zip_file.writestr(filename, buffer.getvalue())
+                    zip_file.writestr(nome, buffer.getvalue())
 
             zip_bytes.seek(0)
             st.download_button(
