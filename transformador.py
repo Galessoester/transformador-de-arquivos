@@ -3,16 +3,11 @@ from PIL import Image
 import io
 import zipfile
 
-def transformaJpg(arquivo):
-    img = Image.open(arquivo)
-    img = img.convert('RGB')  
-    return img
-
-def transformaPng(arquivo):
+def transforma(arquivo):
     img = Image.open(arquivo)
     return img
 
-def transformaWebp(arquivo):
+def transformaRgb(arquivo):
     img = Image.open(arquivo)
     img = img.convert('RGB')  
     return img
@@ -46,13 +41,13 @@ if arquivos:
     if len(arquivos) == 1: 
         arquivo = arquivos[0]
         if escolha == 'JPG':
-            img_transformada = transformaJpg(arquivo)
+            img_transformada = transformaRgb(arquivo)
             formato = 'jpeg'
         elif escolha == 'PNG':
-            img_transformada = transformaPng(arquivo)
+            img_transformada = transforma(arquivo)
             formato = 'png'
         elif escolha == 'WEBP':
-            img_transformada = transformaWebp(arquivo)
+            img_transformada = transformaRgb(arquivo)
             formato = 'webp'
         st.download_button(
             label=f'Download imagem',
@@ -64,23 +59,23 @@ if arquivos:
         arquivos_transformados = []
         for arquivo in arquivos:
             if escolha == 'JPG':
-                img_transformada = transformaJpg(arquivo)
+                img_transformada = transformaRgb(arquivo)
                 formato = 'jpeg'
             elif escolha == 'PNG':
-                img_transformada = transformaPng(arquivo)
+                img_transformada = transforma(arquivo)
                 formato = 'png'
             elif escolha == 'WEBP':
-                img_transformada = transformaWebp(arquivo)
+                img_transformada = transformaRgb(arquivo)
                 formato = 'webp'
 
-            arquivos_transformados.append((img_transformada, arquivo.name))
+            arquivos_transformados.append((img_transformada, arquivo.name, formato))
 
         if st.button('Download em uma pasta zipada'):
             zip_bytes = io.BytesIO()
             with zipfile.ZipFile(zip_bytes, 'w') as zip_file:
                 for img_transformada, filename in arquivos_transformados:
                     buffer = io.BytesIO()
-                    img_transformada.save(buffer, format=formato)
+                    img_transformada.save(buffer, formato)
                     zip_file.writestr(filename, buffer.getvalue())
 
             zip_bytes.seek(0)
