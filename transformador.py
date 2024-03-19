@@ -68,14 +68,14 @@ if arquivos:
                 img_transformada = transformaRgb(arquivo)
                 formato = 'webp'
 
-            arquivos_transformados.append((img_transformada, arquivo.name, formato))
+            arquivos_transformados.append((img_transformada, arquivo.name))
 
         if st.button('Download em uma pasta zipada'):
             zip_bytes = io.BytesIO()
             with zipfile.ZipFile(zip_bytes, 'w') as zip_file:
                 for img_transformada, filename in arquivos_transformados:
                     buffer = io.BytesIO()
-                    img_transformada.save(buffer, formato)
+                    img_transformada.save(buffer, format=formato)
                     zip_file.writestr(filename, buffer.getvalue())
 
             zip_bytes.seek(0)
